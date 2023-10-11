@@ -71,6 +71,12 @@ const modalInputDiscount = overlay.querySelector('.modal__input_discount');
 
 const tableBody = document.querySelector('.table__body');
 
+const controls = document.querySelector('.panel');
+
+const addBtn = document.querySelector('.panel__add-goods');
+
+const html = document.documentElement;
+
 // ? - Создание элемента
 const createElement = (tag, attr, {append, appends, parent, cb} = {}) => {
   const element = document.createElement(tag);
@@ -144,3 +150,15 @@ overlay.classList.remove('active');
 
 // ! - Задание 2 + 3 - готово!
 renderGoods(GOODS_DB);
+
+// ! - Задание 1 - урок 5
+
+html.addEventListener('click', ev => {
+  const target = ev.target;
+  if (target === addBtn) {
+    overlay.classList.add('active');
+  }
+  if (target.closest('.modal__close') || target === overlay) {
+    overlay.classList.remove('active');
+  }
+});
