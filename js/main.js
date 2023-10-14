@@ -1,7 +1,7 @@
 'use strict';
 const GOODS_DB = [
     {
-    'id': 1,
+    'id': 48736521485963,
     'title': 'Смартфон Xiaomi 11T 8/128GB',
     'price': 27000,
     'description': 'Смартфон Xiaomi 11T – это представитель флагманской линейки, выпущенной во второй половине 2021 года. И он полностью соответствует такому позиционированию, предоставляя своим обладателям возможность пользоваться отличными камерами, ни в чем себя не ограничивать при запуске игр и других требовательных приложений.',
@@ -15,7 +15,7 @@ const GOODS_DB = [
     },
   },
   {
-    'id': 2,
+    'id': 92173468054231,
     'title': 'Радиоуправляемый автомобиль Cheetan',
     'price': 4000,
     'description': 'Внедорожник на дистанционном управлении. Скорость 25км/ч. Возраст 7 - 14 лет',
@@ -29,7 +29,7 @@ const GOODS_DB = [
     },
   },
   {
-    'id': 3,
+    'id': 56329781402648,
     'title': 'ТВ приставка MECOOL KI',
     'price': 12400,
     'description': 'Всего лишь один шаг сделает ваш телевизор умным, Быстрый и умный MECOOL KI PRO, прекрасно спроектированный, сочетает в себе прочный процессор Cortex-A53 с чипом Amlogic S905D',
@@ -43,7 +43,7 @@ const GOODS_DB = [
     },
   },
   {
-    'id': 4,
+    'id': 14386920573126,
     'title': 'Витая пара PROConnect 01-0043-3-25',
     'price': 22,
     'description': 'Витая пара Proconnect 01-0043-3-25 является сетевым кабелем с 4 парами проводов типа UTP, в качестве проводника в которых используется алюминий, плакированный медью CCA. Такая неэкранированная витая пара с одножильными проводами диаметром 0.50 мм широко применяется в процессе сетевых монтажных работ. С ее помощью вы сможете обеспечить развертывание локальной сети в домашних условиях или на предприятии, объединить все необходимое вам оборудование в единую сеть.',
@@ -112,11 +112,11 @@ const createRow = (obj, i) => {
   if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
     const {id, title, category, count, price, units} = obj;
     elem.innerHTML = `
-      <td class="table__cell table__counter">${i}</td>
+      <td class="table__cell table__counter">${i + 1}</td>
       <td class="table__cell table__cell_left table__cell_name" 
-        data-id="24601654816512">
+        data-id="${id}">
       <span class="table__cell-id">
-        id: 24601654816512</span>${title}</td>
+        id: ${id}</span>${title}</td>
       <td class="table__cell table__cell_left">${category}</td>
       <td class="table__cell">${units}</td>
       <td class="table__cell">${count}</td>
@@ -168,19 +168,14 @@ cms.addEventListener('click', ev => {
     overlay.classList.add('active');
   }
   if (target.matches('.table__btn_del')) {
-    /*
-      Если по уроку нужен именно метод remove
-      - расскоментируйте строчку ниже.
-    */
-    // target.closest('.table__row').remove();
-    const removerStr = (target.closest('.table__row')
-      .querySelector('.table__cell_name').lastChild.textContent);
+    target.closest('.table__row').remove();
 
-    const numArr = GOODS_DB.findIndex(elem => elem.title === removerStr);
+    GOODS_DB.splice([...document.querySelectorAll('.table__row')]
+      .indexOf(target.closest('.table__row')), 1);
 
-    GOODS_DB.splice(numArr, 1);
-
-    renderGoods(GOODS_DB);
+    [...document.querySelectorAll('.table__row')].forEach((elem, i) => {
+      elem.querySelector('.table__counter').textContent = i + 1;
+    });
 
     console.log(GOODS_DB);
   }
