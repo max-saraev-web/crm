@@ -75,7 +75,7 @@ const controls = document.querySelector('.panel');
 
 const addBtn = document.querySelector('.panel__add-goods');
 
-const html = document.documentElement;
+const cms = document.querySelector('.cms');
 
 // ? - Создание элемента
 const createElement = (tag, attr, {append, appends, parent, cb} = {}) => {
@@ -105,14 +105,14 @@ const createElement = (tag, attr, {append, appends, parent, cb} = {}) => {
 };
 
 // ? - Создание строки
-const createRow = obj => {
+const createRow = (obj, i) => {
   const elem = createElement('tr');
   elem.classList.add('table__row');
 
   if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
     const {id, title, category, count, price, units} = obj;
     elem.innerHTML = `
-      <td class="table__cell table__counter">${id}</td>
+      <td class="table__cell table__counter">${i}</td>
       <td class="table__cell table__cell_left table__cell_name" 
         data-id="24601654816512">
       <span class="table__cell-id">
@@ -153,14 +153,19 @@ overlay.classList.remove('active');
 renderGoods(GOODS_DB);
 
 // ! - Задание 1 - урок 5
-
-html.addEventListener('click', ev => {
+overlay.addEventListener('click', ev => {
   const target = ev.target;
-  if (target === addBtn) {
-    overlay.classList.add('active');
-  }
+
   if (target.closest('.modal__close') || target === overlay) {
     overlay.classList.remove('active');
+  }
+});
+
+cms.addEventListener('click', ev => {
+  const target = ev.target;
+
+  if (target === addBtn) {
+    overlay.classList.add('active');
   }
   if (target.matches('.table__btn_del')) {
     /*
@@ -168,10 +173,10 @@ html.addEventListener('click', ev => {
       - расскоментируйте строчку ниже.
     */
     // target.closest('.table__row').remove();
-    const removerNum = +(target.closest('.table__row')
-      .querySelector('.table__counter').textContent);
+    const removerStr = (target.closest('.table__row')
+      .querySelector('.table__cell_name').lastChild.textContent);
 
-    const numArr = GOODS_DB.findIndex(elem => elem.id === removerNum);
+    const numArr = GOODS_DB.findIndex(elem => elem.title === removerStr);
 
     GOODS_DB.splice(numArr, 1);
 
