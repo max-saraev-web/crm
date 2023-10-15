@@ -168,10 +168,10 @@ cms.addEventListener('click', ev => {
     overlay.classList.add('active');
   }
   if (target.matches('.table__btn_del')) {
-    target.closest('.table__row').remove();
-
     GOODS_DB.splice([...document.querySelectorAll('.table__row')]
       .indexOf(target.closest('.table__row')), 1);
+
+    target.closest('.table__row').remove();
 
     [...document.querySelectorAll('.table__row')].forEach((elem, i) => {
       elem.querySelector('.table__counter').textContent = i + 1;
