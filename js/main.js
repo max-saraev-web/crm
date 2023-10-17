@@ -78,7 +78,6 @@ const addBtn = document.querySelector('.panel__add-goods');
 const cms = document.querySelector('.cms');
 
 const totalPrice = document.querySelector('.cms__total-price');
-console.log('totalPrice: ', totalPrice);
 
 // ? - Генератор ID
 const getId = (min = 1, max = 9) => {
@@ -90,6 +89,13 @@ const getId = (min = 1, max = 9) => {
     } else fullId.push(Math.round(Math.random() * (max - min) + min));
   }
   return fullId.join('');
+};
+
+// ? - Пересчёт очерёдности товаров
+const countRows = () => {
+  [...document.querySelectorAll('.table__row')].forEach((elem, i) => {
+    elem.querySelector('.table__counter').textContent = i + 1;
+  });
 };
 
 // ? - Создание элемента
@@ -160,9 +166,11 @@ const renderGoods = arr => {
     return 'Это не массив!';
   }
 };
-const calcTotal = (elems, output, remove = '$') => {
-  const pureElems = elems.map(elem => +elem.textContent.replace(remove, ''));
+// ! - Правка номер 1
+const calcTotal = (elems, output) => {
+  const pureElems = elems.map(elem => elem.count * elem.price);
   const total = pureElems.reduce((acc, val) => acc + val, 0);
+
   output.textContent = `
     $ ${total}
   `;
@@ -172,8 +180,7 @@ const calcTotal = (elems, output, remove = '$') => {
 overlay.classList.remove('active');
 
 renderGoods(GOODS_DB);
-calcTotal([...document.querySelectorAll('.table__total-price')],
-  totalPrice);
+calcTotal(GOODS_DB, totalPrice);
 // ! - Задание 1 - урок 5
 overlay.addEventListener('click', ev => {
   const target = ev.target;
@@ -204,14 +211,9 @@ cms.addEventListener('click', ev => {
 
     target.closest('.table__row').remove();
 
-    [...document.querySelectorAll('.table__row')].forEach((elem, i) => {
-      elem.querySelector('.table__counter').textContent = i + 1;
-    });
-
+    countRows();
     // ? - Пересчёт
-    calcTotal([...document.querySelectorAll('.table__total-price')],
-      totalPrice);
-    console.log(GOODS_DB);
+    calcTotal(GOODS_DB, totalPrice);
   }
 });
 
@@ -220,7 +222,7 @@ modalForm.addEventListener('submit', ev => {
   const formData = new FormData(target);
 
   const obj = Object.fromEntries(formData);
-  obj.id = overlay.querySelector('.vendor-code__id').textContent;
+  obj.id = +overlay.querySelector('.vendor-code__id').textContent;
   let ittr = 0;
   ev.preventDefault();
 
@@ -229,9 +231,10 @@ modalForm.addEventListener('submit', ev => {
     i++) {
     ittr = i;
   }
+
+  GOODS_DB.push(obj);
   tableBody.append(createRow(obj, ittr));
-  calcTotal([...document.querySelectorAll('.table__total-price')],
-    totalPrice);
+  calcTotal(GOODS_DB, totalPrice);
   target.total.textContent = `$ 0`;
   target.reset();
   overlay.classList.remove('active');
@@ -243,5 +246,4 @@ modalForm.addEventListener('change', ev => {
   total.textContent = `
     $ ${count.value * price.value}
   `;
-  console.log(count.value * price.value);
 });
