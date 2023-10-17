@@ -65,9 +65,9 @@ const modalTitle = overlay.querySelector('.modal__title');
 
 const modalForm = overlay.querySelector('.modal__form');
 
-const modalCheckBox = overlay.querySelector('.modal__checkbox');
+const modalCheckBox = modalForm.querySelector('.modal__checkbox');
 
-const modalInputDiscount = overlay.querySelector('.modal__input_discount');
+const modalInputDiscount = modalForm.querySelector('.modal__input_discount');
 
 const tableBody = document.querySelector('.table__body');
 
@@ -76,6 +76,21 @@ const controls = document.querySelector('.panel');
 const addBtn = document.querySelector('.panel__add-goods');
 
 const cms = document.querySelector('.cms');
+
+const totalPrice = document.querySelector('.cms__total-price');
+console.log('totalPrice: ', totalPrice);
+
+// ? - Генератор ID
+const getId = (min = 1, max = 9) => {
+  let fullId = [];
+
+  for (let i = 0; i < 14; i++) {
+    if (i === 0) {
+      fullId[i] = Math.round(Math.random() * (max - min) + min);
+    } else fullId.push(Math.round(Math.random() * (max - min) + min));
+  }
+  return fullId.join('');
+};
 
 // ? - Создание элемента
 const createElement = (tag, attr, {append, appends, parent, cb} = {}) => {
@@ -110,18 +125,18 @@ const createRow = (obj, i) => {
   elem.classList.add('table__row');
 
   if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
-    const {id, title, category, count, price, units} = obj;
+    const {id, title, category, count, price, units, name} = obj;
     elem.innerHTML = `
       <td class="table__cell table__counter">${i + 1}</td>
       <td class="table__cell table__cell_left table__cell_name" 
         data-id="${id}">
       <span class="table__cell-id">
-        id: ${id}</span>${title}</td>
+        id: ${id}</span>${title ? title : name}</td>
       <td class="table__cell table__cell_left">${category}</td>
       <td class="table__cell">${units}</td>
       <td class="table__cell">${count}</td>
       <td class="table__cell">$${price}</td>
-      <td class="table__cell">$${price * count}</td>
+      <td class="table__cell table__total-price">$${price * count}</td>
       <td class="table__cell table__cell_btn-wrapper">
         <button class="table__btn table__btn_pic"></button>
         <button class="table__btn table__btn_edit"></button>
@@ -145,13 +160,20 @@ const renderGoods = arr => {
     return 'Это не массив!';
   }
 };
+const calcTotal = (elems, output, remove = '$') => {
+  const pureElems = elems.map(elem => +elem.textContent.replace(remove, ''));
+  const total = pureElems.reduce((acc, val) => acc + val, 0);
+  output.textContent = `
+    $ ${total}
+  `;
+};
 
-// ! - Задание 1 - готово!
+// * - Функционал
 overlay.classList.remove('active');
 
-// ! - Задание 2 + 3 - готово!
 renderGoods(GOODS_DB);
-
+calcTotal([...document.querySelectorAll('.table__total-price')],
+  totalPrice);
 // ! - Задание 1 - урок 5
 overlay.addEventListener('click', ev => {
   const target = ev.target;
@@ -159,12 +181,21 @@ overlay.addEventListener('click', ev => {
   if (target.closest('.modal__close') || target === overlay) {
     overlay.classList.remove('active');
   }
+
+  // ? - Переключатель скидоса
+  if (modalForm.discount.checked) {
+    modalInputDiscount.disabled = false;
+  } else if (modalForm.discount.checked === false) {
+    modalInputDiscount.disabled = true;
+    modalInputDiscount.value = '';
+  }
 });
 
 cms.addEventListener('click', ev => {
   const target = ev.target;
 
   if (target === addBtn) {
+    overlay.querySelector('.vendor-code__id').textContent = getId();
     overlay.classList.add('active');
   }
   if (target.matches('.table__btn_del')) {
@@ -177,6 +208,40 @@ cms.addEventListener('click', ev => {
       elem.querySelector('.table__counter').textContent = i + 1;
     });
 
+    // ? - Пересчёт
+    calcTotal([...document.querySelectorAll('.table__total-price')],
+      totalPrice);
     console.log(GOODS_DB);
   }
+});
+
+modalForm.addEventListener('submit', ev => {
+  const target = ev.target;
+  const formData = new FormData(target);
+
+  const obj = Object.fromEntries(formData);
+  obj.id = overlay.querySelector('.vendor-code__id').textContent;
+  let ittr = 0;
+  ev.preventDefault();
+
+  for (let i = 1;
+    i < document.querySelectorAll('.table__row').length + 1;
+    i++) {
+    ittr = i;
+  }
+  tableBody.append(createRow(obj, ittr));
+  calcTotal([...document.querySelectorAll('.table__total-price')],
+    totalPrice);
+  target.total.textContent = `$ 0`;
+  target.reset();
+  overlay.classList.remove('active');
+});
+
+modalForm.addEventListener('change', ev => {
+  const {count, price, total} = modalForm;
+
+  total.textContent = `
+    $ ${count.value * price.value}
+  `;
+  console.log(count.value * price.value);
 });
