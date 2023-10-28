@@ -1,4 +1,3 @@
-'use strict';
 const GOODS_DB = [
     {
     'id': 48736521485963,
@@ -58,192 +57,30 @@ const GOODS_DB = [
   },
 ];
 
+import {rowControl} from './modules/control.js';
+import elems from './modules/getDomElems.js';
+import modal from './modules/modal.js';
+import renderGoods from './modules/render.js';
+import {calcTotal, countRows} from './modules/utility.js';
 
-const overlay = document.querySelector('.overlay');
+const {
+  overlay,
+  modalForm,
+  modalInputDiscount,
+  tableBody,
+  addBtn,
+  cms,
+  totalPrice,
+} = elems;
 
-const modalTitle = overlay.querySelector('.modal__title');
-
-const modalForm = overlay.querySelector('.modal__form');
-
-const modalCheckBox = modalForm.querySelector('.modal__checkbox');
-
-const modalInputDiscount = modalForm.querySelector('.modal__input_discount');
-
-const tableBody = document.querySelector('.table__body');
-
-const controls = document.querySelector('.panel');
-
-const addBtn = document.querySelector('.panel__add-goods');
-
-const cms = document.querySelector('.cms');
-
-const totalPrice = document.querySelector('.cms__total-price');
-
-// ? - Генератор ID
-const getId = (min = 1, max = 9) => {
-  let fullId = [];
-
-  for (let i = 0; i < 14; i++) {
-    if (i === 0) {
-      fullId[i] = Math.round(Math.random() * (max - min) + min);
-    } else fullId.push(Math.round(Math.random() * (max - min) + min));
-  }
-  return fullId.join('');
-};
-
-// ? - Пересчёт очерёдности товаров
-const countRows = () => {
-  [...document.querySelectorAll('.table__row')].forEach((elem, i) => {
-    elem.querySelector('.table__counter').textContent = i + 1;
-  });
-};
-
-// ? - Создание элемента
-const createElement = (tag, attr, {append, appends, parent, cb} = {}) => {
-  const element = document.createElement(tag);
-
-  if (attr) {
-    Object.assign(element, attr);
-  }
-
-  if (append && append instanceof HTMLElement) {
-    element.append(append);
-  }
-
-  if (appends && appends.every(elem => elem instanceof HTMLElement)) {
-    element.append(...appends);
-  }
-
-  if (parent && parent instanceof HTMLElement) {
-    parent.append(element);
-  }
-
-  if (cb && typeof cb === 'function') {
-    cb(element);
-  }
-
-  return element;
-};
-
-// ? - Создание строки
-const createRow = (obj, i) => {
-  const elem = createElement('tr');
-  elem.classList.add('table__row');
-
-  if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
-    const {id, title, category, count, price, units, name} = obj;
-    elem.innerHTML = `
-      <td class="table__cell table__counter">${i + 1}</td>
-      <td class="table__cell table__cell_left table__cell_name" 
-        data-id="${id}">
-      <span class="table__cell-id">
-        id: ${id}</span>${title ? title : name}</td>
-      <td class="table__cell table__cell_left">${category}</td>
-      <td class="table__cell">${units}</td>
-      <td class="table__cell">${count}</td>
-      <td class="table__cell">$${price}</td>
-      <td class="table__cell table__total-price">$${price * count}</td>
-      <td class="table__cell table__cell_btn-wrapper">
-        <button class="table__btn table__btn_pic"></button>
-        <button class="table__btn table__btn_edit"></button>
-        <button class="table__btn table__btn_del"></button>
-      </td>
-    `;
-  } else {
-    console.log('Это не объект!');
-  }
-  return elem;
-};
-
-// ? - Перебор массива
-const renderGoods = arr => {
-  if (Array.isArray(arr)) {
-    tableBody.innerHTML = '';
-    arr.forEach((elem, i) => {
-      tableBody.append(createRow(elem, i));
-    });
-  } else {
-    return 'Это не массив!';
-  }
-};
-// ! - Правка номер 1
-const calcTotal = (elems, output) => {
-  const pureElems = elems.map(elem => elem.count * elem.price);
-  const total = pureElems.reduce((acc, val) => acc + val, 0);
-
-  output.textContent = `
-    $ ${total}
-  `;
-};
 
 // * - Функционал
-overlay.classList.remove('active');
-
-renderGoods(GOODS_DB);
-calcTotal(GOODS_DB, totalPrice);
-// ! - Задание 1 - урок 5
-overlay.addEventListener('click', ev => {
-  const target = ev.target;
-
-  if (target.closest('.modal__close') || target === overlay) {
-    overlay.classList.remove('active');
-  }
-
-  // ? - Переключатель скидоса
-  if (modalForm.discount.checked) {
-    modalInputDiscount.disabled = false;
-  } else if (modalForm.discount.checked === false) {
-    modalInputDiscount.disabled = true;
-    modalInputDiscount.value = '';
-  }
-});
-
-cms.addEventListener('click', ev => {
-  const target = ev.target;
-
-  if (target === addBtn) {
-    overlay.querySelector('.vendor-code__id').textContent = getId();
-    overlay.classList.add('active');
-  }
-  if (target.matches('.table__btn_del')) {
-    GOODS_DB.splice([...document.querySelectorAll('.table__row')]
-      .indexOf(target.closest('.table__row')), 1);
-
-    target.closest('.table__row').remove();
-
-    countRows();
-    // ? - Пересчёт
-    calcTotal(GOODS_DB, totalPrice);
-  }
-});
-
-modalForm.addEventListener('submit', ev => {
-  const target = ev.target;
-  const formData = new FormData(target);
-
-  const obj = Object.fromEntries(formData);
-  obj.id = +overlay.querySelector('.vendor-code__id').textContent;
-  let ittr = 0;
-  ev.preventDefault();
-
-  for (let i = 1;
-    i < document.querySelectorAll('.table__row').length + 1;
-    i++) {
-    ittr = i;
-  }
-
-  GOODS_DB.push(obj);
-  tableBody.append(createRow(obj, ittr));
+const init = () => {
+  modal(overlay, modalForm, modalInputDiscount,
+    GOODS_DB, tableBody, totalPrice);
+  rowControl(GOODS_DB, cms, overlay, addBtn, totalPrice);
+  renderGoods(GOODS_DB, tableBody);
   calcTotal(GOODS_DB, totalPrice);
-  target.total.textContent = `$ 0`;
-  target.reset();
-  overlay.classList.remove('active');
-});
+};
 
-modalForm.addEventListener('change', ev => {
-  const {count, price, total} = modalForm;
-
-  total.textContent = `
-    $ ${count.value * price.value}
-  `;
-});
+init();
