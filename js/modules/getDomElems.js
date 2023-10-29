@@ -12,6 +12,8 @@ const cms = document.querySelector('.cms');
 
 const totalPrice = document.querySelector('.cms__total-price');
 
+const modalTotal = document.querySelector('.modal__total-price');
+
 export default {
   overlay,
   modalForm,
@@ -20,4 +22,5 @@ export default {
   addBtn,
   cms,
   totalPrice,
+  modalTotal,
 };

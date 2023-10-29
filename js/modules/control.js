@@ -16,7 +16,9 @@ export const rowControl = (data, selector, overlay, add, totalPrice) => {
       target.closest('.table__row').remove();
 
       countRows();
-      calcTotal(data, totalPrice);
+      totalPrice.textContent = `
+        $ ${calcTotal(data)}
+      `;
     }
   });
 };

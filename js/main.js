@@ -61,7 +61,7 @@ import {rowControl} from './modules/control.js';
 import elems from './modules/getDomElems.js';
 import modal from './modules/modal.js';
 import renderGoods from './modules/render.js';
-import {calcTotal, countRows} from './modules/utility.js';
+import {calcTotal} from './modules/utility.js';
 
 const {
   overlay,
@@ -80,7 +80,9 @@ const init = () => {
     GOODS_DB, tableBody, totalPrice);
   rowControl(GOODS_DB, cms, overlay, addBtn, totalPrice);
   renderGoods(GOODS_DB, tableBody);
-  calcTotal(GOODS_DB, totalPrice);
+  totalPrice.textContent = `
+    $ ${calcTotal(GOODS_DB)}
+  `;
 };
 
 init();

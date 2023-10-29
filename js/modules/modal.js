@@ -1,10 +1,10 @@
 import createRow from './createElems.js';
+import {calcTotal} from './utility.js';
 
 export const openModal = overlay => overlay.classList.add('active');
 export const closeModal = overlay => overlay.classList.remove('active');
-const calcTotal = form => {
+const calcTotalForm = form => {
   const {count, price, total} = form;
-
   total.textContent = `
     $ ${count.value * price.value}
   `;
@@ -31,7 +31,7 @@ const modal = (overlay, form, discountTrigger, data, tableBody, totalPrice) => {
       closeModal(overlay);
     }
   });
-  form.addEventListener('change', () => calcTotal(form));
+  form.addEventListener('change', () => calcTotalForm(form));
 
   form.addEventListener('submit', ev => {
     const target = ev.target;
@@ -50,7 +50,9 @@ const modal = (overlay, form, discountTrigger, data, tableBody, totalPrice) => {
 
     data.push(obj);
     tableBody.append(createRow(obj, ittr));
-    calcTotal(data, totalPrice);
+    totalPrice.textContent = `
+      $ ${calcTotal(data)}
+    `;
     target.total.textContent = `$ 0`;
     target.reset();
     overlay.classList.remove('active');

@@ -15,11 +15,7 @@ export const countRows = () => {
   });
 };
 
-export const calcTotal = (elems, output) => {
+export const calcTotal = elems => {
   const pureElems = elems.map(elem => elem.count * elem.price);
-  const total = pureElems.reduce((acc, val) => acc + val, 0);
-
-  output.textContent = `
-    $ ${total}
-  `;
+  return pureElems.reduce((acc, val) => acc + val, 0);
 };
