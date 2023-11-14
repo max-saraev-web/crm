@@ -30,7 +30,7 @@ const createRow = (obj, i) => {
   elem.classList.add('table__row');
 
   if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
-    const {id, title, category, count, price, units, name} = obj;
+    const {id, title, category, count, price, units, name, pic} = obj;
     elem.innerHTML = `
       <td class="table__cell table__counter">${i + 1}</td>
       <td class="table__cell table__cell_left table__cell_name" 
@@ -43,7 +43,8 @@ const createRow = (obj, i) => {
       <td class="table__cell">$${price}</td>
       <td class="table__cell table__total-price">$${price * count}</td>
       <td class="table__cell table__cell_btn-wrapper">
-        <button class="table__btn table__btn_pic"></button>
+        <button data-pic="img/goods/${pic}"
+          class="table__btn table__btn_pic"></button>
         <button class="table__btn table__btn_edit"></button>
         <button class="table__btn table__btn_del"></button>
       </td>

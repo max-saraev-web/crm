@@ -38,6 +38,7 @@ const modal = (overlay, form, discountTrigger, data, tableBody, totalPrice) => {
     const formData = new FormData(target);
 
     const obj = Object.fromEntries(formData);
+    obj.pic = obj.image.name;
     obj.id = +overlay.querySelector('.vendor-code__id').textContent;
     let ittr = 0;
     ev.preventDefault();

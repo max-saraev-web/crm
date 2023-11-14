@@ -20,5 +20,20 @@ export const rowControl = (data, selector, overlay, add, totalPrice) => {
         $ ${calcTotal(data)}
       `;
     }
+    if (target.matches('.table__btn_pic')) {
+      const middleHeight = (screen.height / 2) - (600 / 2);
+      const middleWidth = (screen.width / 2) - (800 / 2);
+
+      const path = target.dataset.pic;
+      const popup = open('about:blank', '', 'popup', 'width=800', 'height=600');
+      const img = document.createElement('img');
+      img.src = path;
+      img.style.cssText = `
+        display: block;
+        width: 100%;
+      `;
+      popup.document.body.append(img);
+      popup.moveTo(middleWidth, middleHeight);
+    }
   });
 };
