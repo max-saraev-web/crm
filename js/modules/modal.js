@@ -4,6 +4,17 @@ import {calcTotal, toBase64} from './utility.js';
 
 export const openModal = overlay => overlay.classList.add('active');
 export const closeModal = overlay => overlay.classList.remove('active');
+
+const message = document.createElement('span');
+message.classList.add('file-warning');
+message.style.cssText = `
+  color: red;
+  text-transform: uppercase; 
+  text-align: center;
+  font-weight: 700;
+`;
+message.textContent = 'ИЗОБРАЖЕНИЕ НЕ ДОЛЖНО ПРЕВЫЩАТЬ РАЗМЕР 1 МБ';
+
 const calcTotalForm = form => {
   const {count, price, total} = form;
   total.textContent = `
@@ -61,30 +72,21 @@ const modal = (overlay, form, discountTrigger, data, tableBody, totalPrice) => {
   });
 
   const fileBtn = form.querySelector('.modal__file');
-  const fileLabel = form.querySelector('.modal__label_file');
+  const fieldSet = document.querySelector('.modal__fieldset');
 
   fileBtn.addEventListener('change', async ({target}) => {
     const warning = form.querySelector('.file-warning');
-    if (warning) warning.textContent = '';
+    const prevImg = document.querySelector('.preview');
+    if (warning) message.remove();
+    if (prevImg) prevImg.remove();
 
     if (target.files[0].size > 1048567) {
-      fileLabel.insertAdjacentHTML('beforebegin', `
-        <span class='file-warning'
-        style="color: red; text-transform: uppercase; 
-        text-align: center; font-weight: 700;">
-          ИЗОБРАЖЕНИЕ НЕ ДОЛЖНО ПРЕВЫЩАТЬ РАЗМЕР 1 МБ
-        </span>
-      `);
+      fieldSet.append(message);
     } else {
-      const previewWindow = createPreview(target.files[0]);
-      const {wrap, btn} = previewWindow;
-      form.append(wrap);
+      const wrap = createPreview(target.files[0]);
+      fieldSet.append(wrap);
 
       const result = await toBase64(target.files[0]);
-
-      btn.addEventListener('click', () => {
-        wrap.remove();
-      });
     }
   });
 };

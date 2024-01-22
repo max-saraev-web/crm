@@ -35,23 +35,12 @@
 
 .preview{
   background-color: #fff;
-  position: absolute;
   inset: 0;
   z-index: 3;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
 }
-
-.preview__btn{
-  background-color: blue;
-  width: 240px;
-  min-height: 35px;
-  border: 1px solid #fff;
+.preview__img{
   border-radius: 8px;
-  color: #fff;
-  text-align: start;
-  font-weight: 700;
-  padding: 0px 12px;
-  background: url('/img/preview-close.svg') right 10px top 10px / 10px 10px no-repeat, blue;
 }
